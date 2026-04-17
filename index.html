@@ -966,7 +966,11 @@ const casesBank = [
             renderGlossary();
             setupAutocomplete();
             setupGlossaryAutocomplete(); // Add this line
-            handleDifficultyChange(); 
+            handleDifficultyChange();
+            // Initialize the other tabs
+            initSandbox();
+            generateSandboxChallenge();
+            initFlowchart();
         };
 function setupGlossaryAutocomplete() {
             const glossInput = document.getElementById('glossary-search-input');
@@ -1549,7 +1553,13 @@ inputEl.addEventListener('keydown', function (e) {
                     { text: "Reality Testing / Psychosis", next: "psychosis_branch" },
                     { text: "Fear, Anxiety, or Trauma", next: "anxiety_branch" },
                     { text: "Eating & Weight", next: "eating_branch" },
-                    { text: "Personality & Relational", next: "personality_branch" }
+                    { text: "Personality & Relational", next: "personality_branch" },
+                    { text: "Elimination", next: "elimination_branch" },
+                    { text: "Sleep", next: "sleep_branch" },
+                    { text: "Somatic & Falsification", next: "somatic_falsification_branch" },
+                    { text: "Neurodevelopmental", next: "neurodevelopmental_branch" },
+                    { text: "Substance & Impulse Control", next: "substance_impulse_branch" },
+                    { text: "Dissociative", next: "dissociative_branch" }
                 ] 
             },
             
@@ -1566,7 +1576,6 @@ inputEl.addEventListener('keydown', function (e) {
             schizo: { res: "Schizophrenia" },
             schizophreniform: { res: "Schizophreniform Disorder" },
             brief: { res: "Brief Psychotic Disorder" },
-            brief: { res: "Brief Psychotic Disorder" }, // Defined res node
             schizoaffective: { res: "Schizoaffective Disorder" },
 
             // --- MOOD BRANCH ---
@@ -1589,7 +1598,6 @@ inputEl.addEventListener('keydown', function (e) {
                 ] 
             },
             pdd: { res: "Persistent Depressive Disorder" },
-            pdd: { res: "Persistent Depressive Disorder" }, // Defined res node
             mdd: { res: "Major Depressive Disorder" },
             pmdd: { res: "Premenstrual Dysphoric Disorder" },
 
@@ -1602,14 +1610,12 @@ inputEl.addEventListener('keydown', function (e) {
                     { text: "Sudden, unprovoked surges of physical panic", next: "panic" },
                     { text: "Free-floating, excessive daily worry", next: "gad" },
                     { text: "Fear of negative evaluation in social settings", next: "sad" },
-                    { text: "Fear of negative evaluation in social settings", next: "sad" },
-                    { text: "Marked fear of a specific object or situation", next: "specific_phobia" }, // NEW
-                    { text: "Fear of situations where escape is difficult (e.g., crowds)", next: "agoraphobia" }, // NEW
-                    { text: "Excessive fear concerning separation from attachment figures", next: "separation_anxiety" }, // NEW
-                    { text: "Consistent failure to speak in specific social situations", next: "selective_mutism" } // NEW
+                    { text: "Marked fear of a specific object or situation", next: "specific_phobia" },
+                    { text: "Fear of situations where escape is difficult (e.g., crowds)", next: "agoraphobia" },
+                    { text: "Excessive fear concerning separation from attachment figures", next: "separation_anxiety" },
+                    { text: "Consistent failure to speak in specific social situations", next: "selective_mutism" }
                 ] 
             },
-            trauma_duration: { 
             trauma_duration: {
                 q: "Have the trauma-related symptoms lasted longer than 1 month?", 
                 options: [
@@ -1619,17 +1625,12 @@ inputEl.addEventListener('keydown', function (e) {
             },
             ptsd: { res: "Posttraumatic Stress Disorder" },
             asd: { res: "Acute Stress Disorder" },
-            specific_phobia: { res: "Specific Phobia" }, // Added missing res node
-            agoraphobia: { res: "Agoraphobia" }, // Added missing res node
-            separation_anxiety: { res: "Separation Anxiety Disorder" }, // Added missing res node
-            selective_mutism: { res: "Selective Mutism" }, // Added missing res node
+            specific_phobia: { res: "Specific Phobia" },
+            agoraphobia: { res: "Agoraphobia" },
+            separation_anxiety: { res: "Separation Anxiety Disorder" },
+            selective_mutism: { res: "Selective Mutism" },
             panic: { res: "Panic Disorder" },
-            asd: { res: "Acute Stress Disorder" }, // Defined res node
-            specific_phobia: { res: "Specific Phobia" }, // Defined res node
-            agoraphobia: { res: "Agoraphobia" }, // Defined res node
-            separation_anxiety: { res: "Separation Anxiety Disorder" }, // Defined res node
-            selective_mutism: { res: "Selective Mutism" }, // Defined res node
-            ocd: { res: "Obsessive-Compulsive Disorder" }, // Defined res node
+            ocd: { res: "Obsessive-Compulsive Disorder" },
             gad: { res: "Generalized Anxiety Disorder" },
             sad: { res: "Social Anxiety Disorder" },
 
@@ -1639,7 +1640,6 @@ inputEl.addEventListener('keydown', function (e) {
                 options: [
                     { text: "Yes, and they use compensatory behaviors (purging)", next: "bulimia" },
                     { text: "Yes, but without compensatory behaviors", next: "bed" },
-                    { text: "No, the primary issue is severe caloric restriction", next: "anorexia_or_arfid" }, // New sub-branch
                     { text: "No, the primary issue is severe caloric restriction", next: "anorexia_or_arfid" },
                     { text: "No, the issue is eating non-food items", next: "pica" },
                     { text: "No, the issue is regurgitation of food", next: "rumination" }
@@ -1648,31 +1648,31 @@ inputEl.addEventListener('keydown', function (e) {
             bulimia: { res: "Bulimia Nervosa" },
             bed: { res: "Binge-Eating Disorder" },
             anorexia: { res: "Anorexia Nervosa" },
-            anorexia: { res: "Anorexia Nervosa" }, // Defined res node
+            arfid: { res: "Avoidant/Restrictive Food Intake Disorder" },
+            pica: { res: "Pica" },
+            rumination: { res: "Rumination Disorder" },
+            anorexia_or_arfid: {
+                q: "Is the restriction driven by fear of weight gain/body image disturbance?",
+                options: [
+                    { text: "Yes, fear of weight gain", next: "anorexia" },
+                    { text: "No, sensory aversion or lack of interest", next: "arfid" }
+                ]
+            },
 
             // --- PERSONALITY BRANCH ---
-            arfid: { res: "Avoidant/Restrictive Food Intake Disorder" }, // Added missing res node
-            pica: { res: "Pica" }, // Added missing res node
-            rumination: { res: "Rumination Disorder" }, // Added missing res node
-            personality_branch: { // Fixed: Added comma after previous node
+            personality_branch: {
                 q: "What is the core feature of their rigid, lifelong maladaptive relational pattern?",
                 options: [
                     { text: "Frantic efforts to avoid abandonment & mood lability", next: "bpd" },
                     { text: "Grandiosity & profound lack of empathy", next: "npd" },
                     { text: "Disregard for rules & violation of others' rights", next: "aspd" },
                     { text: "Severe social inhibition due to fear of rejection", next: "avpd" },
-                    { text: "Extreme perfectionism and need for control", next: "ocpd" }
-                    ,
-                    { text: "Pervasive distrust and suspiciousness", next: "paranoid_pd" }, // Added comma
-                    { text: "Detachment from social relationships, restricted emotions", next: "schizoid_pd" }, // Fixed: Added comma
-                    { text: "Acute discomfort in close relationships, eccentricities", next: "schizotypal_pd" } // Fixed: Added comma
-                    , // Corrected comma placement
+                    { text: "Extreme perfectionism and need for control", next: "ocpd" },
                     { text: "Pervasive distrust and suspiciousness", next: "paranoid_pd" },
                     { text: "Detachment from social relationships, restricted emotions", next: "schizoid_pd" },
                     { text: "Acute discomfort in close relationships, eccentricities", next: "schizotypal_pd" }
                 ]
             },
-            }, // Corrected comma placement
             paranoid_pd: { res: "Paranoid Personality Disorder" },
             schizoid_pd: { res: "Schizoid Personality Disorder" },
             schizotypal_pd: { res: "Schizotypal Personality Disorder" },
@@ -1680,8 +1680,7 @@ inputEl.addEventListener('keydown', function (e) {
             npd: { res: "Narcissistic Personality Disorder" },
             aspd: { res: "Antisocial Personality Disorder" },
             avpd: { res: "Avoidant Personality Disorder" },
-            ocpd: { res: "Obsessive-Compulsive Personality Disorder" }, // Fixed: Added comma
-            ocpd: { res: "Obsessive-Compulsive Personality Disorder" }, // Defined res node
+            ocpd: { res: "Obsessive-Compulsive Personality Disorder" },
 
             // --- ELIMINATION BRANCH (New) ---
             elimination_branch: {
@@ -1693,7 +1692,6 @@ inputEl.addEventListener('keydown', function (e) {
             },
             enuresis: { res: "Enuresis" },
             encopresis: { res: "Encopresis" },
-            encopresis: { res: "Encopresis" }, // Defined res node
 
             // --- SLEEP BRANCH (New) ---
             sleep_branch: {
@@ -1708,39 +1706,31 @@ inputEl.addEventListener('keydown', function (e) {
             },
             insomnia: { res: "Insomnia Disorder" },
             narcolepsy: { res: "Narcolepsy" },
-            } // Corrected comma placement
-            insomnia: {res: "Insomnia Disorder" } // Defined res node
-            narcolepsy: {res: "Narcolepsy" } // Defined res node
-            osa: { res: "Obstructive Sleep Apnea" } // Added missing res node
-            rls: { res: "Restless Legs Syndrome" } // Added missing res node
-            nightmare_disorder: { res: "Nightmare Disorder" } // Added missing res node
+            osa: { res: "Obstructive Sleep Apnea" },
+            rls: { res: "Restless Legs Syndrome" },
+            nightmare_disorder: { res: "Nightmare Disorder" },
 
             // --- SOMATIC / FALSIFICATION BRANCH (Expanded) ---
             somatic_falsification_branch: {
                 q: "Is there intentional falsification of symptoms?",
-                options; [
+                options: [
                     { text: "Yes, for self (no external reward)", next: "factitious_self" },
                     { text: "Yes, for another (no external reward)", next: "factitious_another" },
                     { text: "No, symptoms are real but with excessive anxiety", next: "somatic_anxiety" },
                     { text: "No, preoccupation with illness despite no/mild symptoms", next: "illness_anxiety" },
                     { text: "No, altered motor/sensory function incompatible with neurology", next: "conversion_disorder" }
                 ]
-            }
-            factitious_self: { res: "Factitious Disorder" }
-            factitious_another: { res: "Factitious Disorder Imposed on Another" }
-            somatic_anxiety: { res: "Somatic Symptom Disorder" }
-            illness_anxiety: { res: "Illness Anxiety Disorder" }
-            conversion_disorder: { res: "Conversion Disorder" }
-            factitious_self: { res: "Factitious Disorder" } // Defined res node
-            factitious_another: { res: "Factitious Disorder Imposed on Another" } // Defined res node
-            somatic_anxiety: { res: "Somatic Symptom Disorder" } // Defined res node
-            illness_anxiety: { res: "Illness Anxiety Disorder" } // Defined res node
-            conversion_disorder: { res: "Conversion Disorder" } // Defined res node
+            },
+            factitious_self: { res: "Factitious Disorder" },
+            factitious_another: { res: "Factitious Disorder Imposed on Another" },
+            somatic_anxiety: { res: "Somatic Symptom Disorder" },
+            illness_anxiety: { res: "Illness Anxiety Disorder" },
+            conversion_disorder: { res: "Conversion Disorder" },
 
             // --- NEURODEVELOPMENTAL BRANCH (NEW) ---
             neurodevelopmental_branch: {
                 q: "What is the primary neurodevelopmental concern?",
-                options; [
+                options: [
                     { text: "Social communication deficits & repetitive behaviors", next: "asd_nd" },
                     { text: "Inattention and/or hyperactivity-impulsivity", next: "adhd_nd" },
                     { text: "Multiple motor tics and at least one vocal tic", next: "tourettes_nd" },
@@ -1752,22 +1742,22 @@ inputEl.addEventListener('keydown', function (e) {
                     { text: "Difficulties in social use of verbal/nonverbal communication (no repetitive behaviors)", next: "social_pragmatic_nd" },
                     { text: "Acquisition/execution of coordinated motor skills below expectations", next: "dcd_nd" }
                 ]
-            }
-            asd_nd: { res: "Autism Spectrum Disorder" }
-            adhd_nd: { res: "Attention-Deficit/Hyperactivity Disorder" }
-            tourettes_nd: { res: "Tourette's Disorder" }
-            sld_nd: { res: "Specific Learning Disorder" }
-            id_nd: { res: "Intellectual Disability" }
-            language_nd: { res: "Language Disorder" }
-            speech_sound_nd: { res: "Speech Sound Disorder" }
-            fluency_nd: { res: "Childhood-Onset Fluency Disorder" }
-            social_pragmatic_nd: { res: "Social (Pragmatic) Communication Disorder" }
-            dcd_nd: { res: "Developmental Coordination Disorder" }
+            },
+            asd_nd: { res: "Autism Spectrum Disorder" },
+            adhd_nd: { res: "Attention-Deficit/Hyperactivity Disorder" },
+            tourettes_nd: { res: "Tourette's Disorder" },
+            sld_nd: { res: "Specific Learning Disorder" },
+            id_nd: { res: "Intellectual Disability" },
+            language_nd: { res: "Language Disorder" },
+            speech_sound_nd: { res: "Speech Sound Disorder" },
+            fluency_nd: { res: "Childhood-Onset Fluency Disorder" },
+            social_pragmatic_nd: { res: "Social (Pragmatic) Communication Disorder" },
+            dcd_nd: { res: "Developmental Coordination Disorder" },
 
             // --- SUBSTANCE USE / IMPULSE CONTROL BRANCH (NEW) ---
             substance_impulse_branch: {
                 q: "What is the primary problematic behavior?",
-                options; [
+                options: [
                     { text: "Problematic pattern of alcohol use", next: "aud_sub" },
                     { text: "Problematic pattern of cannabis use", next: "cud_sub" },
                     { text: "Problematic pattern of opioid use", next: "oud_sub" },
@@ -1780,40 +1770,32 @@ inputEl.addEventListener('keydown', function (e) {
                     { text: "Pattern violating rights of others or societal norms (child/adolescent)", next: "conduct_sub" },
                     { text: "Recurrent aggressive outbursts disproportionate to provocation", next: "ied_sub" }
                 ]
-            }
-            aud_sub: { res: "Alcohol Use Disorder" }
-            cud_sub: { res: "Cannabis Use Disorder" }
-            oud_sub: { res: "Opioid Use Disorder" }
-            stimulant_sub: { res: "Stimulant Use Disorder" }
-            tud_sub: { res: "Tobacco Use Disorder" }
-            gambling_sub: { res: "Gambling Disorder" }
-            kleptomania_sub: { res: "Kleptomania" }
-            pyromania_sub: { res: "Pyromania" }
-            odd_sub: { res: "Oppositional Defiant Disorder" }
-            conduct_sub: { res: "Conduct Disorder" }
-            ied_sub: { res: "Intermittent Explosive Disorder" }
+            },
+            aud_sub: { res: "Alcohol Use Disorder" },
+            cud_sub: { res: "Cannabis Use Disorder" },
+            oud_sub: { res: "Opioid Use Disorder" },
+            stimulant_sub: { res: "Stimulant Use Disorder" },
+            tud_sub: { res: "Tobacco Use Disorder" },
+            gambling_sub: { res: "Gambling Disorder" },
+            kleptomania_sub: { res: "Kleptomania" },
+            pyromania_sub: { res: "Pyromania" },
+            odd_sub: { res: "Oppositional Defiant Disorder" },
+            conduct_sub: { res: "Conduct Disorder" },
+            ied_sub: { res: "Intermittent Explosive Disorder" },
 
             // --- DISSOCIATIVE BRANCH (NEW) ---
             dissociative_branch: {
                 q: "What is the primary dissociative symptom?",
-                options; [
+                options: [
                     { text: "Two or more distinct personality states & memory gaps", next: "did_diss" },
                     { text: "Inability to recall important autobiographical info (traumatic)", next: "da_diss" },
                     { text: "Persistent unreality/detachment from self or surroundings", next: "dpdr_diss" }
                 ]
-            }
-            did_diss: { res: "Dissociative Identity Disorder" }
-            da_diss: { res: "Dissociative Amnesia" }
+            },
+            did_diss: { res: "Dissociative Identity Disorder" },
+            da_diss: { res: "Dissociative Amnesia" },
             dpdr_diss: { res: "Depersonalization/Derealization Disorder" }
-
-            // Sub-branch for Anorexia vs ARFID
-            anorexia_or_arfid: {
-                q: "Is the restriction driven by fear of weight gain/body image disturbance?",
-                options; [
-                    { text: "Yes, fear of weight gain", next: "anorexia" },
-                    { text: "No, sensory aversion or lack of interest", next: "arfid" }
-                ]
-            }
+        };
 
         let currentFlowNode = 'start';
 
@@ -1896,11 +1878,6 @@ inputEl.addEventListener('keydown', function (e) {
             }
         }
 
-        // Initialize features
-        initSandbox();
-        generateSandboxChallenge(); 
-        initFlowchart();
-        renderGlossary();
     </script>
 <button id="back-to-top" onclick="scrollToTop()" title="Go to top">↑</button>
 </body>
